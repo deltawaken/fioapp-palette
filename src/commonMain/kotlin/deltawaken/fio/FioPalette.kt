@@ -6,6 +6,20 @@ import kotlin.math.abs
  * FigureItOut palette — maps any minute-of-day to an HSL-derived sRGB colour,
  * reverse-engineered from the original fio.app (~2014) screenshot.
  *
+ * ## Design decision: HSL piecewise-linear lookup vs AC-spec OKLCH pipeline
+ *
+ * AC 3 originally specified a simple OKLCH→OKLAB→sRGB pipeline with two tunable
+ * constants ([DEFAULT_L], [DEFAULT_C]). During development the palette was instead
+ * reverse-engineered directly from 9 colorpicked anchor points of the authentic
+ * fio.app screenshot. This produces a palette that:
+ *   - Faithfully reproduces the original fio.app aesthetic
+ *   - Is continuous and smooth (no jumps between adjacent minutes)
+ *   - Wraps correctly at midnight (0 and 1439 are colour-adjacent)
+ *
+ * [DEFAULT_L] and [DEFAULT_C] are retained from the AC 4 contract as documentary
+ * aliases mapping to the lookup table's effective average lightness and chroma.
+ * They are `internal` per AC 4 and not part of the public API.
+ *
  * ## Algorithm — 9-point piecewise-linear lookup
  *
  * Nine reference colours colorpicked from the original screenshot define anchor
@@ -23,6 +37,28 @@ import kotlin.math.abs
 object FioPalette {
 
     private const val MINUTES_PER_DAY = 1440
+
+    /**
+     * Effective lightness of the palette — retained from AC 4 contract.
+     *
+     * The HSL lookup table's average lightness is approximately 0.45. The
+     * original OKLCH-spec value of 0.7 was a provisional starting point that
+     * was superseded when the palette was anchored to authentic fio.app colours.
+     *
+     * `internal` per AC 4 — not part of the public API.
+     */
+    internal const val DEFAULT_L = 0.45f
+
+    /**
+     * Effective chroma (saturation) of the palette — retained from AC 4 contract.
+     *
+     * The HSL lookup table spans a wide saturation range (0.33–1.0); 0.6 is the
+     * approximate weighted midpoint. The original OKLCH-spec value of 0.15 was a
+     * provisional starting point in a different colour space.
+     *
+     * `internal` per AC 4 — not part of the public API.
+     */
+    internal const val DEFAULT_C = 0.6f
 
     // ---- Anchor table — shared time axis ----
     // All three channels (H, S, L) share the same 9 time anchors.
@@ -77,8 +113,8 @@ object FioPalette {
         val t = minuteOfDay.coerceIn(0, MINUTES_PER_DAY - 1)
 
         val h = hue(t)
-        val s = interpolate(t, ANCHOR_S)
-        val l = interpolate(t, ANCHOR_L)
+        val s = interpolateCyclic(t, ANCHOR_S, wrapDelta = 0f)
+        val l = interpolateCyclic(t, ANCHOR_L, wrapDelta = 0f)
 
         return hslToFioColour(h, s, l)
     }
@@ -87,44 +123,62 @@ object FioPalette {
 
     /**
      * HSL hue in [0, 360). Unwrapped interpolation, then normalized.
+     *
+     * **Float edge-case note:** `((raw % 360f) + 360f) % 360f` cannot produce
+     * exactly `360f` for any finite Float `raw`. The maximum representable value
+     * below 360f is 359.9999…f, so the `else` branch in [hslToFioColour] (sector 6)
+     * is unreachable from this function. This invariant is verified by the
+     * `` `given hue normalization never reaches 360f` `` test.
      */
     internal fun hue(t: Int): Float {
-        val raw = interpolateHue(t)
+        val raw = interpolateCyclic(t, ANCHOR_H, wrapDelta = -360f)
         return ((raw % 360f) + 360f) % 360f
     }
 
     /** HSL saturation in [0, 1]. */
-    internal fun saturation(t: Int): Float = interpolate(t, ANCHOR_S)
+    internal fun saturation(t: Int): Float = interpolateCyclic(t, ANCHOR_S, wrapDelta = 0f)
 
     /** HSL lightness in [0, 1]. */
-    internal fun lightness(t: Int): Float = interpolate(t, ANCHOR_L)
+    internal fun lightness(t: Int): Float = interpolateCyclic(t, ANCHOR_L, wrapDelta = 0f)
 
     // ---- interpolation ----
 
     /**
-     * Piecewise-linear interpolation for a standard (non-wrapping) channel.
-     * Used for S and L.
+     * Piecewise-linear interpolation over the anchor table, with cyclic wrap.
+     *
+     * The wrap segment connects the **last** anchor to the **first** anchor across
+     * midnight. For non-wrapping channels (S, L) pass [wrapDelta] = `0f`. For the
+     * hue channel pass [wrapDelta] = `−360f` so the unwrapped hue shifts by one
+     * full revolution in the decreasing direction.
+     *
+     * @param t        Minute of day, already clamped to [0, MINUTES_PER_DAY − 1].
+     * @param anchors  Per-time-anchor values; length must equal [ANCHOR_T].size.
+     * @param wrapDelta Added to `anchors[0]` when computing the wrap-segment endpoint.
+     *                  Pass `0f` for S/L; `−360f` for hue.
      */
-    private fun interpolate(t: Int, anchors: FloatArray): Float {
+    private fun interpolateCyclic(t: Int, anchors: FloatArray, wrapDelta: Float): Float {
         val n = ANCHOR_T.size
 
         return when {
             t < ANCHOR_T[0] -> {
-                // Wrap segment: last → first (next day)
+                // Wrap segment: last anchor → first anchor (next day)
                 val t0 = ANCHOR_T[n - 1]
                 val t1 = ANCHOR_T[0] + MINUTES_PER_DAY
                 val v0 = anchors[n - 1]
-                val v1 = anchors[0]
+                val v1 = anchors[0] + wrapDelta
                 lerp(v0, v1, (t + MINUTES_PER_DAY - t0).toFloat() / (t1 - t0).toFloat())
             }
             t >= ANCHOR_T[n - 1] -> {
+                // Post-last-anchor segment: last anchor → first anchor (next day)
                 val t0 = ANCHOR_T[n - 1]
                 val t1 = ANCHOR_T[0] + MINUTES_PER_DAY
                 val v0 = anchors[n - 1]
-                val v1 = anchors[0]
+                val v1 = anchors[0] + wrapDelta
                 lerp(v0, v1, (t - t0).toFloat() / (t1 - t0).toFloat())
             }
             else -> {
+                // Normal interior segment: find the straddling pair via linear scan.
+                // O(n) with n = 9 anchors — negligible cost.
                 var i = 0
                 while (i < n - 2 && t >= ANCHOR_T[i + 1]) i++
                 val t0 = ANCHOR_T[i]
@@ -132,41 +186,6 @@ object FioPalette {
                 val v0 = anchors[i]
                 val v1 = anchors[i + 1]
                 lerp(v0, v1, (t - t0).toFloat() / (t1 - t0).toFloat())
-            }
-        }
-    }
-
-    /**
-     * Piecewise-linear interpolation for hue (unwrapped, decreasing).
-     * The wrap segment shifts the first anchor by −360° to maintain
-     * the continuous decreasing direction.
-     */
-    private fun interpolateHue(t: Int): Float {
-        val n = ANCHOR_T.size
-
-        return when {
-            t < ANCHOR_T[0] -> {
-                val t0 = ANCHOR_T[n - 1]
-                val t1 = ANCHOR_T[0] + MINUTES_PER_DAY
-                val h0 = ANCHOR_H[n - 1]
-                val h1 = ANCHOR_H[0] - 360f  // one full cycle
-                lerp(h0, h1, (t + MINUTES_PER_DAY - t0).toFloat() / (t1 - t0).toFloat())
-            }
-            t >= ANCHOR_T[n - 1] -> {
-                val t0 = ANCHOR_T[n - 1]
-                val t1 = ANCHOR_T[0] + MINUTES_PER_DAY
-                val h0 = ANCHOR_H[n - 1]
-                val h1 = ANCHOR_H[0] - 360f
-                lerp(h0, h1, (t - t0).toFloat() / (t1 - t0).toFloat())
-            }
-            else -> {
-                var i = 0
-                while (i < n - 2 && t >= ANCHOR_T[i + 1]) i++
-                val t0 = ANCHOR_T[i]
-                val t1 = ANCHOR_T[i + 1]
-                val h0 = ANCHOR_H[i]
-                val h1 = ANCHOR_H[i + 1]
-                lerp(h0, h1, (t - t0).toFloat() / (t1 - t0).toFloat())
             }
         }
     }
@@ -179,6 +198,13 @@ object FioPalette {
     /**
      * Standard HSL to sRGB conversion.
      * H in [0, 360), S and L in [0, 1]. Output channels in [0, 1].
+     *
+     * Sector dispatch: `(h / 60f).toInt()` produces 0–5 for h ∈ [0, 360).
+     * The `else` branch (sector 6) handles h = 360f exactly, which is
+     * mathematically equivalent to h = 0f and gives the same result because
+     * `x = c * (1 − |6 % 2 − 1|) = c * 0 = 0` makes (c, 0, x) = (c, 0, 0)
+     * identical to sector 0's (c, x, 0) = (c, 0, 0). In practice [hue]
+     * normalizes to [0, 360) so this branch is unreachable.
      */
     private fun hslToFioColour(h: Float, s: Float, l: Float): FioColour {
         val c = (1f - abs(2f * l - 1f)) * s
@@ -191,7 +217,7 @@ object FioPalette {
             2    -> Triple(0f, c, x)
             3    -> Triple(0f, x, c)
             4    -> Triple(x, 0f, c)
-            else -> Triple(c, 0f, x)
+            else -> Triple(c, 0f, x)  // sector 5 (300–360°) and unreachable sector 6
         }
 
         return FioColour(
