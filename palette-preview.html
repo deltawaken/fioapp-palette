@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>fioapp-palette — colour preview</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #111;
+    color: #eee;
+    padding: 24px;
+  }
+  h1 {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+    color: #888;
+    text-transform: uppercase;
+  }
+  .scroll-wrap {
+    overflow-x: auto;
+  }
+  table {
+    border-collapse: collapse;
+    table-layout: fixed;
+    min-width: max-content;
+  }
+  th, td {
+    border: 1px solid #222;
+    text-align: center;
+    vertical-align: middle;
+  }
+  thead th {
+    font-size: 0.65rem;
+    font-weight: 500;
+    color: #666;
+    padding: 4px 2px;
+    background: #111;
+    width: 4vw;
+    min-width: 36px;
+  }
+  thead th:first-child {
+    width: 90px;
+    min-width: 90px;
+  }
+  tbody th {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #aaa;
+    padding: 4px 8px;
+    background: #181818;
+    white-space: nowrap;
+    vertical-align: middle;
+    text-align: right;
+    width: 90px;
+    min-width: 90px;
+  }
+  tbody td {
+    height: 20vh;
+    width: 4vw;
+    min-width: 36px;
+    padding: 0;
+    position: relative;
+  }
+  tbody td span {
+    font-size: 0.6rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    position: absolute;
+    top: 6px;
+    left: 0;
+    right: 0;
+    text-align: center;
+    opacity: 0.6;
+  }
+</style>
+</head>
+<body>
+<h1>fioapp-palette · colour by hour</h1>
+<div class="scroll-wrap">
+<table>
+  <thead>
+    <tr>
+      <th></th>
+      <th>00h</th><th>01h</th><th>02h</th><th>03h</th><th>04h</th><th>05h</th><th>06h</th><th>07h</th><th>08h</th><th>09h</th><th>10h</th><th>11h</th><th>12h</th><th>13h</th><th>14h</th><th>15h</th><th>16h</th><th>17h</th><th>18h</th><th>19h</th><th>20h</th><th>21h</th><th>22h</th><th>23h</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><th>not mapped</th>
+      <td style="background:linear-gradient(to bottom, #040c30, #081a40);color:#fff;"><span>00h</span></td>
+      <td style="background:linear-gradient(to bottom, #081b41, #0e2d50);color:#fff;"><span>01h</span></td>
+      <td style="background:linear-gradient(to bottom, #0e2e50, #15435d);color:#fff;"><span>02h</span></td>
+      <td style="background:linear-gradient(to bottom, #15435d, #1f5e71);color:#fff;"><span>03h</span></td>
+      <td style="background:linear-gradient(to bottom, #1f5f72, #308596);color:#fff;"><span>04h</span></td>
+      <td style="background:linear-gradient(to bottom, #308697, #42b8bc);color:#000;"><span>05h</span></td>
+      <td style="background:linear-gradient(to bottom, #43b9bd, #73ccb8);color:#000;"><span>06h</span></td>
+      <td style="background:linear-gradient(to bottom, #73cdb8, #94dcb2);color:#000;"><span>07h</span></td>
+      <td style="background:linear-gradient(to bottom, #94ddb2, #a1eb93);color:#000;"><span>08h</span></td>
+      <td style="background:linear-gradient(to bottom, #a2eb93, #ddf793);color:#000;"><span>09h</span></td>
+      <td style="background:linear-gradient(to bottom, #def793, #feeb8e);color:#000;"><span>10h</span></td>
+      <td style="background:linear-gradient(to bottom, #feeb8e, #fedd78);color:#000;"><span>11h</span></td>
+      <td style="background:linear-gradient(to bottom, #fedd77, #ffcc61);color:#000;"><span>12h</span></td>
+      <td style="background:linear-gradient(to bottom, #ffcc60, #f9ad4f);color:#000;"><span>13h</span></td>
+      <td style="background:linear-gradient(to bottom, #f9ac4f, #e2784e);color:#000;"><span>14h</span></td>
+      <td style="background:linear-gradient(to bottom, #e1774e, #c45453);color:#000;"><span>15h</span></td>
+      <td style="background:linear-gradient(to bottom, #c45453, #a94f71);color:#fff;"><span>16h</span></td>
+      <td style="background:linear-gradient(to bottom, #a94f72, #8d3692);color:#fff;"><span>17h</span></td>
+      <td style="background:linear-gradient(to bottom, #8c3592, #49237a);color:#fff;"><span>18h</span></td>
+      <td style="background:linear-gradient(to bottom, #48237a, #331b67);color:#fff;"><span>19h</span></td>
+      <td style="background:linear-gradient(to bottom, #331a66, #201352);color:#fff;"><span>20h</span></td>
+      <td style="background:linear-gradient(to bottom, #201352, #110c40);color:#fff;"><span>21h</span></td>
+      <td style="background:linear-gradient(to bottom, #110c40, #060834);color:#fff;"><span>22h</span></td>
+      <td style="background:linear-gradient(to bottom, #060834, #040b30);color:#fff;"><span>23h</span></td>
+    </tr>
+    <tr><th>equinox</th>
+      <td style="background:linear-gradient(to bottom, #040c30, #081a40);color:#fff;"><span>00h</span></td>
+      <td style="background:linear-gradient(to bottom, #081b41, #0e2d50);color:#fff;"><span>01h</span></td>
+      <td style="background:linear-gradient(to bottom, #0e2e50, #15435d);color:#fff;"><span>02h</span></td>
+      <td style="background:linear-gradient(to bottom, #15435d, #1f5e71);color:#fff;"><span>03h</span></td>
+      <td style="background:linear-gradient(to bottom, #1f5f72, #308596);color:#fff;"><span>04h</span></td>
+      <td style="background:linear-gradient(to bottom, #308697, #42b8bc);color:#000;"><span>05h</span></td>
+      <td style="background:linear-gradient(to bottom, #43b9bd, #73ccb8);color:#000;"><span>06h</span></td>
+      <td style="background:linear-gradient(to bottom, #73cdb8, #94dcb2);color:#000;"><span>07h</span></td>
+      <td style="background:linear-gradient(to bottom, #94ddb2, #a1eb93);color:#000;"><span>08h</span></td>
+      <td style="background:linear-gradient(to bottom, #a2eb93, #ddf793);color:#000;"><span>09h</span></td>
+      <td style="background:linear-gradient(to bottom, #def793, #feeb8e);color:#000;"><span>10h</span></td>
+      <td style="background:linear-gradient(to bottom, #feeb8e, #fedd78);color:#000;"><span>11h</span></td>
+      <td style="background:linear-gradient(to bottom, #fedd77, #ffcc61);color:#000;"><span>12h</span></td>
+      <td style="background:linear-gradient(to bottom, #ffcc60, #f9ad4f);color:#000;"><span>13h</span></td>
+      <td style="background:linear-gradient(to bottom, #f9ac4f, #e2784e);color:#000;"><span>14h</span></td>
+      <td style="background:linear-gradient(to bottom, #e1774e, #c45453);color:#000;"><span>15h</span></td>
+      <td style="background:linear-gradient(to bottom, #c45453, #a94f71);color:#fff;"><span>16h</span></td>
+      <td style="background:linear-gradient(to bottom, #a94f72, #8d3692);color:#fff;"><span>17h</span></td>
+      <td style="background:linear-gradient(to bottom, #8c3592, #49237a);color:#fff;"><span>18h</span></td>
+      <td style="background:linear-gradient(to bottom, #48237a, #331b67);color:#fff;"><span>19h</span></td>
+      <td style="background:linear-gradient(to bottom, #331a66, #201352);color:#fff;"><span>20h</span></td>
+      <td style="background:linear-gradient(to bottom, #201352, #110c40);color:#fff;"><span>21h</span></td>
+      <td style="background:linear-gradient(to bottom, #110c40, #060834);color:#fff;"><span>22h</span></td>
+      <td style="background:linear-gradient(to bottom, #060834, #040b30);color:#fff;"><span>23h</span></td>
+    </tr>
+    <tr><th>summer<br>(Paris)</th>
+      <td style="background:linear-gradient(to bottom, #130d42, #050831);color:#fff;"><span>00h</span></td>
+      <td style="background:linear-gradient(to bottom, #050831, #06153b);color:#fff;"><span>01h</span></td>
+      <td style="background:linear-gradient(to bottom, #07153b, #0e2d50);color:#fff;"><span>02h</span></td>
+      <td style="background:linear-gradient(to bottom, #0e2e50, #184a61);color:#fff;"><span>03h</span></td>
+      <td style="background:linear-gradient(to bottom, #184b62, #2a788a);color:#fff;"><span>04h</span></td>
+      <td style="background:linear-gradient(to bottom, #2a798b, #43b9bd);color:#000;"><span>05h</span></td>
+      <td style="background:linear-gradient(to bottom, #43b9bd, #6bcab8);color:#000;"><span>06h</span></td>
+      <td style="background:linear-gradient(to bottom, #6bcab8, #94d7bc);color:#000;"><span>07h</span></td>
+      <td style="background:linear-gradient(to bottom, #94d8bc, #93e49d);color:#000;"><span>08h</span></td>
+      <td style="background:linear-gradient(to bottom, #93e49c, #b4ef93);color:#000;"><span>09h</span></td>
+      <td style="background:linear-gradient(to bottom, #b5ef93, #e9f994);color:#000;"><span>10h</span></td>
+      <td style="background:linear-gradient(to bottom, #eaf994, #feeb8e);color:#000;"><span>11h</span></td>
+      <td style="background:linear-gradient(to bottom, #feea8e, #fedf7b);color:#000;"><span>12h</span></td>
+      <td style="background:linear-gradient(to bottom, #fedf7b, #fed369);color:#000;"><span>13h</span></td>
+      <td style="background:linear-gradient(to bottom, #fed369, #ffc559);color:#000;"><span>14h</span></td>
+      <td style="background:linear-gradient(to bottom, #ffc559, #f7a84f);color:#000;"><span>15h</span></td>
+      <td style="background:linear-gradient(to bottom, #f7a84f, #e6804e);color:#000;"><span>16h</span></td>
+      <td style="background:linear-gradient(to bottom, #e6804e, #d26250);color:#000;"><span>17h</span></td>
+      <td style="background:linear-gradient(to bottom, #d26150, #bb565c);color:#000;"><span>18h</span></td>
+      <td style="background:linear-gradient(to bottom, #bb565d, #a94f72);color:#fff;"><span>19h</span></td>
+      <td style="background:linear-gradient(to bottom, #a84e72, #993c8e);color:#fff;"><span>20h</span></td>
+      <td style="background:linear-gradient(to bottom, #983b8e, #4a247b);color:#fff;"><span>21h</span></td>
+      <td style="background:linear-gradient(to bottom, #49247b, #2b185f);color:#fff;"><span>22h</span></td>
+      <td style="background:linear-gradient(to bottom, #2b175e, #140d42);color:#fff;"><span>23h</span></td>
+    </tr>
+    <tr><th>winter<br>(Paris)</th>
+      <td style="background:linear-gradient(to bottom, #050832, #040b30);color:#fff;"><span>00h</span></td>
+      <td style="background:linear-gradient(to bottom, #040b30, #07173d);color:#fff;"><span>01h</span></td>
+      <td style="background:linear-gradient(to bottom, #07173e, #0b264a);color:#fff;"><span>02h</span></td>
+      <td style="background:linear-gradient(to bottom, #0c264a, #113656);color:#fff;"><span>03h</span></td>
+      <td style="background:linear-gradient(to bottom, #113756, #174860);color:#fff;"><span>04h</span></td>
+      <td style="background:linear-gradient(to bottom, #174961, #206074);color:#fff;"><span>05h</span></td>
+      <td style="background:linear-gradient(to bottom, #206174, #2e8192);color:#fff;"><span>06h</span></td>
+      <td style="background:linear-gradient(to bottom, #2e8193, #3da1af);color:#000;"><span>07h</span></td>
+      <td style="background:linear-gradient(to bottom, #3da2af, #69c9b8);color:#000;"><span>08h</span></td>
+      <td style="background:linear-gradient(to bottom, #6ac9b8, #94deaf);color:#000;"><span>09h</span></td>
+      <td style="background:linear-gradient(to bottom, #94deae, #b5ef93);color:#000;"><span>10h</span></td>
+      <td style="background:linear-gradient(to bottom, #b7f093, #fef195);color:#000;"><span>11h</span></td>
+      <td style="background:linear-gradient(to bottom, #fef095, #fede79);color:#000;"><span>12h</span></td>
+      <td style="background:linear-gradient(to bottom, #fede78, #ffc85b);color:#000;"><span>13h</span></td>
+      <td style="background:linear-gradient(to bottom, #ffc75a, #ed8f4e);color:#000;"><span>14h</span></td>
+      <td style="background:linear-gradient(to bottom, #ed8e4e, #ca5952);color:#000;"><span>15h</span></td>
+      <td style="background:linear-gradient(to bottom, #c95852, #a74c75);color:#fff;"><span>16h</span></td>
+      <td style="background:linear-gradient(to bottom, #a64b76, #762f8c);color:#fff;"><span>17h</span></td>
+      <td style="background:linear-gradient(to bottom, #752f8b, #472378);color:#fff;"><span>18h</span></td>
+      <td style="background:linear-gradient(to bottom, #462278, #351b69);color:#fff;"><span>19h</span></td>
+      <td style="background:linear-gradient(to bottom, #351b68, #251558);color:#fff;"><span>20h</span></td>
+      <td style="background:linear-gradient(to bottom, #251558, #180f47);color:#fff;"><span>21h</span></td>
+      <td style="background:linear-gradient(to bottom, #170f47, #0c0a3c);color:#fff;"><span>22h</span></td>
+      <td style="background:linear-gradient(to bottom, #0c0a3c, #050832);color:#fff;"><span>23h</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</body>
+</html>
