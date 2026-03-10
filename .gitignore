@@ -8,6 +8,11 @@ local.properties
 *.iml
 .vscode/
 
+# Eclipse / Buildship
+.project
+.classpath
+.settings/
+
 # OS
 .DS_Store
 Thumbs.db
